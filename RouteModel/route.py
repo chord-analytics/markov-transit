@@ -1,11 +1,8 @@
 import csv
-import itertools
 import numpy as np
-from scipy.stats import norm, lognorm, johnsonsb, truncnorm, skew
+from scipy.stats import truncnorm, skew
 import math
 from RouteModel.stop import Stop
-import time
-from statistics import mean, stdev
 import matplotlib.pyplot as plt
 import pickle
 
@@ -135,14 +132,10 @@ class Model:
                     if col == self.dmax:  # Take all the probability above as well
                         p = 1 - truncnorm.cdf(stop.mu + self.dmax - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
                     elif col == self.dmin:  # Take all the probability below as well
-                        # print("From {} to {}".format(row, col))
-                        # print(stop.mu + self.dmin - row + 0.5)
                         p = truncnorm.cdf(stop.mu + self.dmin - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma)
-                        # print(p)
                     else:  # Regular calculation of an interval
                         p = truncnorm.cdf(stop.mu + col - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma) - \
                             truncnorm.cdf(stop.mu + col - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
-                    # print("From {} to {}: {}".format(row, col, p))
                     r.append(p)
                 mtx.append(r)
             stop.set_p_matrix(mtx)
@@ -216,13 +209,10 @@ class Model:
                         val = ZERO
                     p = 1 - trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
                 elif col == self.dmin:  # Take all the probability below as well
-                    # print("From {} to {}".format(row, col))
-                    # print(stop.mu + self.dmin - row + 0.5)
                     val = stop.mu + self.dmin - row + 0.5
                     if val <= 0.0:
                         val = ZERO
                     p = trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
-                    # print(p)
                 else:  # Regular calculation of an interval
                     val1 = stop.mu + col - row + 0.5
                     if val1 <= 0.0:
@@ -232,7 +222,6 @@ class Model:
                         val2 = ZERO
                     p = trunclognorm_cdf(val1, a, b, stop.mu, stop.sigma) - \
                         trunclognorm_cdf(val2, a, b, stop.mu, stop.sigma)
-                # print("From {} to {}: {}".format(row, col, p))
                 r.append(p)
             mtx.append(r)
         stop.set_p_matrix(mtx)
