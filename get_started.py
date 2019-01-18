@@ -9,3 +9,5 @@ model = Model.from_db(db_file, 86, 1, -10, 20)
 
 # Now let's build some transition probability matrices
 model.make_lognormal_probabilities()
+
+model.plot_state(20)
