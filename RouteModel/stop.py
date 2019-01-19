@@ -1,11 +1,39 @@
 from scipy.stats import johnsonsb
 import numpy as np
+from numba import jitclass
+from numba import int32, float32, float64, char, byte
 
+spec = [
+    ('pMtx', float64[:,:]),
+    ('tMtx', float64[:,:]),
+    ('mu', float32),
+    ('sigma', float32),
+    ('nb', float32),
+    ('theta', float32),
+    ('na', float32),
+    ('tau', int32),
+    ('gamma_e', float32),
+    ('gamma_l', float32),
+    ('cost', float32),
+    ('jsb_a', float32),
+    ('jsb_b', float32),
+    ('jsb_q', float32),
+    ('alpha', float32),
+    ('H', float32),
+    ('Delta', int32),
+    ('dmin', int32),
+    ('dmax', int32),
+    ('excluded', int32),
+    ('stop_id', int32),
+    ('stop_name', char[:])
+]
+
+#@jitclass(spec)
 class Stop:
-    def __init__(self, mu, sigma, on, off, thru, g_e, g_l, tau, H, dmin, dmax, Delta, stop_id, stop_name ):
+    def __init__(self, mu:float, sigma:float, on:float, off:float, thru:float, g_e:float, g_l:float, tau:int, H:float, dmin:int, dmax:int, Delta:int, stop_id:int, stop_name:str):
         # Transition matrices
-        self.pMtx = None  # Matrix for non-time-point stop
-        self.tMtx = None  # Matrix for time point stop
+        self.pMtx = np.zeros((2,2))#None  # Matrix for non-time-point stop
+        self.tMtx = np.zeros((2,2))#None  # Matrix for time point stop
 
         # Data
         self.mu = float(mu)  # Mean travel time
@@ -18,7 +46,7 @@ class Stop:
         self.tau = int(tau)  # Slack time
         self.gamma_e = float(g_e)  # Early penalty cost
         self.gamma_l = float(g_l)  # Late penalty cost
-        self.cost = None  # Total cost placeholder
+        self.cost = 0.0#None  # Total cost placeholder
 
         # Passenger arrival parameters
         self.jsb_a = -1.0  # Passenger Johnson SB arrival distribution parameter 'a'
