@@ -34,10 +34,11 @@ class Model:
         self.p0 = None
         self.set_initial_on_time()
         self.stop_list = []
-        for r in data:
+        for mu,sigma,nb,na,theta,g_e,g_l,tau,stop_id,stop_name in data:
+            print(stop_name)
             self.stop_list.append(
-                Stop(float(r[0]), float(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[5]), float(r[6]),
-                     float(r[7]), self.H, self.dmin, self.dmax, self.Delta, r[8], r[9]))
+                Stop(mu, sigma, nb, na, theta, g_e, g_l, tau, self.H, self.dmin, self.dmax, self.Delta, stop_id, stop_name))
+
         self.current_state = [False for i in self.stop_list]
         self.optimal_state = [i for i in self.current_state]
 
