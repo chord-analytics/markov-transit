@@ -1,14 +1,14 @@
 import csv
 import numpy as np
 from scipy.stats import truncnorm, skew
-import math
+import math, functools
 from RouteModel.stop import Stop
 import matplotlib.pyplot as plt
 import pickle
 
 ZERO = 0.000000001
 
-
+@functools.lru_cache(maxsize=128)
 def trunclognorm_cdf(x, a, b, mean, sd):
     try:
         mu = math.log(mean / math.sqrt(1 + (sd * sd) / (mean * mean)))
