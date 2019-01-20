@@ -35,7 +35,6 @@ class Model:
         self.set_initial_on_time()
         self.stop_list = []
         for mu,sigma,nb,na,theta,g_e,g_l,tau,stop_id,stop_name in data:
-            print(stop_name)
             self.stop_list.append(
                 Stop(mu, sigma, nb, na, theta, g_e, g_l, tau, self.H, self.dmin, self.dmax, self.Delta, stop_id, stop_name))
 
