@@ -115,7 +115,6 @@ for sample_id in sample_ids:
             tup = tuple([details[idx][5], details[idx+1][5]])
             if minutes > 0:
                 delta_dict[tup].append(minutes)
-            # print("{} Travel from {} to {} took {} min.".format(details[idx][8], details[idx][6], details[idx+1][6], minutes))
 
 for idx in delta_dict:
     print("Inserting stop pair data for {},{}".format(idx[0], idx[1]))
@@ -177,11 +176,6 @@ for idx in delta_dict:
     skewness = skew(np.asarray(deltas, dtype=np.float32))
     sql = """INSERT INTO travel_time_stat (route_id, start_stop, end_stop, mean, sd, skewness) VALUES (?,?,?,?,?,?)"""
     thesis_c.execute(sql, (route_id, idx[0], idx[1], mean, sd, skewness))
-
-    # with open("data/route_{}_{}_{}.csv".format(route_id, idx[0], idx[1]), 'w') as outfile:
-    #     outfile.write("\n".join([str(i) for i in delta_dict[idx]]))
-        # Grab the stop information just for the summary stats
-
 
     summary_stats.append([seq, idx[0], start_name, start_lat, start_lon, idx[1], end_name, end_lat, end_lon, len(deltas), mean, sd, cov])
 thesis_conn.commit()

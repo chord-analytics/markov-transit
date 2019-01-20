@@ -5,3 +5,4 @@
 *.idb
 *.sqlite
 *.db3
+.venv
