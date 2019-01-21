@@ -1,17 +1,18 @@
 import csv
-import numpy as np
-from scipy.stats import truncnorm, skew
-import math, functools
-from RouteModel.stop import Stop
-import matplotlib.pyplot as plt
+import math
+import functools
 import pickle
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import truncnorm 
+from scipy.stats import skew
+from RouteModel.stop import Stop
 from truncated_lognormal import truncated_lognormal_ab_cdf
 
 ZERO = 0.000000001
-
 @functools.lru_cache(maxsize=128)
 def fast_trunclognorm_cdf(x, a, b, mean, sd):
-    return truncated_lognormal_ab_cdf(x, a, b, mean, sd)
+    return truncated_lognormal_ab_cdf(x, mean, sd, a, b)
 
 @functools.lru_cache(maxsize=128)
 def trunclognorm_cdf(x, a, b, mean, sd):
