@@ -85,3 +85,4 @@ double truncated_normal_b_variance ( double mu, double sigma, double b );
 Date: 20190120
 */
 double truncated_lognormal_ab_cdf ( double x, double mu, double sigma, double a, double b);
+double truncated_cdf(double x, double a, double b);
