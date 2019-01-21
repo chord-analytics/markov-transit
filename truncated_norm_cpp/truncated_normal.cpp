@@ -4564,27 +4564,30 @@ double truncated_normal_b_variance ( double mu, double sigma, double b )
 //
 //    Output, double TRUNCATED_LOGNORMAL_AB_CDF, the value of the CDF, 
 //
-double truncated_cdf(double x, double a, double b) {
+double truncnormal_cdf(double x, double a, double b) {
   double na = normal_01_cdf(a);
   double delta = a>0 ? -(normal_01_cdf(-b) - normal_01_cdf(-a)) : normal_01_cdf(b) - na;
-  return (normal_01_cdf(x) - na) / delta;
+  return bounded((normal_01_cdf(x) - na) / delta);
 }
 
 double truncated_lognormal_ab_cdf ( double x, double mu, double sigma, double a, double b) {
     double beta = 1 + ( sigma * sigma ) / ( mu * mu ) ;
     double adj_mu = log( mu / sqrt(beta) );
     double adj_sigma = sqrt( log(beta) );
-    double result = truncated_cdf( (log(x) - adj_mu ) / adj_sigma, a, b);
-    return max(min(result, 1.0),0.0);
+    double result = truncnormal_cdf( (log(x) - adj_mu ) / adj_sigma, a, b);
+    return bounded(result);
 }
 
+double bounded(double x) {
+  return max(min(x,1.0),0.0);
+}
 
 namespace py = pybind11;
-PYBIND11_MODULE(truncated_lognormal, m) {
-    m.doc() = "truncated_lognormal_ab_cdf"; // optional module docstring
+PYBIND11_MODULE(truncated_normal_stats, m) {
+    m.doc() = "Truncated normal functions implemented in C++."; // optional module docstring
 
     m.def("truncated_lognormal_ab_cdf", &truncated_lognormal_ab_cdf, "Truncated lognormal ab cdf.");
     m.def("truncated_normal_ab_cdf", &truncated_normal_ab_cdf, "Truncated normal ab cdf.");
     m.def("normal_01_cdf",&normal_01_cdf, "Normal distibution cdf.");
-    m.def("truncated_cdf", &truncated_cdf, "Reimplemented version of scipy truncated cdf.");
+    m.def("truncnormal_cdf", &truncnormal_cdf, "Reimplemented version of scipy truncated cdf.");
 }
