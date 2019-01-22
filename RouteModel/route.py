@@ -13,7 +13,7 @@ ZERO = 0.000000001
 
 @functools.lru_cache(maxsize=128)
 def fast_truncnorm_cdf(x, a, b, loc, scale):
-    return truncnormal_cdf(x,(a-loc)/scale,(b-loc)/scale)
+    return truncnormal_cdf((x-loc)/scale,a,b)
 
 @functools.lru_cache(maxsize=128)
 def fast_trunclognorm_cdf(x, a, b, mean, sd):
