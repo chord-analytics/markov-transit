@@ -17,5 +17,6 @@ RUN python3.7 -m pip install truncated_norm_cpp/
 # matplotlib config (used by benchmark)
 RUN mkdir -p /root/.config/matplotlib
 RUN echo "backend : Agg" > /root/.config/matplotlib/matplotlibrc
-
+# alias python3.7 as python
+RUN echo 'alias python=python3.7' >> ~/.bashrc
 
