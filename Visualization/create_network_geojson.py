@@ -15,6 +15,7 @@ stop_ids = []
 # First, we assemble the route shapes together.
 with open(routes_file) as route_file:
     routes = csv.reader(route_file)
+    next(routes)
     for route in routes:
         route_id = route[0]
         route_name = route[1]
