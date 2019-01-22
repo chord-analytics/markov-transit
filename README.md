@@ -19,5 +19,5 @@ Once inside the container `python3.7` will be available as a command.
 
 Now try:
 ```
-$ cd /usr/src/; time python3.7 get_started.py
+$ cd /usr/src/; time python get_started.py
 ```
