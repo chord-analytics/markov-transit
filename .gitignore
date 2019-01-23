@@ -5,4 +5,5 @@
 *.idb
 *.sqlite
 *.db3
+*.pyc
 .venv

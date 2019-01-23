@@ -1,12 +1,23 @@
 import csv
-import numpy as np
-from scipy.stats import truncnorm, skew
-import math, functools
-from RouteModel.stop import Stop
-import matplotlib.pyplot as plt
+import math
+import functools
 import pickle
-
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import truncnorm 
+from scipy.stats import skew
+from RouteModel.stop import Stop
+from truncated_normal_stats import truncated_lognormal_ab_cdf
+from truncated_normal_stats import truncnormal_cdf
 ZERO = 0.000000001
+
+@functools.lru_cache(maxsize=128)
+def fast_truncnorm_cdf(x, a, b, loc, scale):
+    return truncnormal_cdf((x-loc)/scale,a,b)
+
+@functools.lru_cache(maxsize=128)
+def fast_trunclognorm_cdf(x, a, b, mean, sd):
+    return truncated_lognormal_ab_cdf(x, mean, sd, a, b)
 
 @functools.lru_cache(maxsize=128)
 def trunclognorm_cdf(x, a, b, mean, sd):
@@ -34,10 +45,10 @@ class Model:
         self.p0 = None
         self.set_initial_on_time()
         self.stop_list = []
-        for r in data:
+        for mu,sigma,nb,na,theta,g_e,g_l,tau,stop_id,stop_name in data:
             self.stop_list.append(
-                Stop(float(r[0]), float(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[5]), float(r[6]),
-                     float(r[7]), self.H, self.dmin, self.dmax, self.Delta, r[8], r[9]))
+                Stop(mu, sigma, nb, na, theta, g_e, g_l, tau, self.H, self.dmin, self.dmax, self.Delta, stop_id, stop_name))
+
         self.current_state = [False for i in self.stop_list]
         self.optimal_state = [i for i in self.current_state]
 
@@ -100,12 +111,12 @@ class Model:
         b = self.dmax
         for d in range(self.dmin, self.dmax):
             if d == self.dmax:  # Take all the probability above as well
-                p = 1 - truncnorm.cdf(d - 0.5, a, b, loc=mu, scale=sigma)
+                p = 1 - fast_truncnorm_cdf(d - 0.5, a, b, loc=mu, scale=sigma)
             elif d == self.dmin:  # Take all the probability below as well
-                p = truncnorm.cdf(d + 0.5, a, b, loc=mu, scale=sigma)
+                p = fast_truncnorm_cdf(d + 0.5, a, b, loc=mu, scale=sigma)
             else:
-                p = truncnorm.cdf(d + 0.5, a, b, loc=mu, scale=sigma) - \
-                    truncnorm.cdf(d - 0.5, a, b, loc=mu, scale=sigma)
+                p = fast_truncnorm_cdf(d + 0.5, a, b, loc=mu, scale=sigma) - \
+                    fast_truncnorm_cdf(d - 0.5, a, b, loc=mu, scale=sigma)
             self.p0[self.d_to_i(d)] = p
 
     def set_initial_lognormal(self, mu, sigma):
@@ -115,8 +126,8 @@ class Model:
         # Most positive jump possible
         b = self.dmax
         for d in range(1, self.dmax):
-            p = trunclognorm_cdf(d + 0.5, a, b, mu, sigma) - \
-                trunclognorm_cdf(d - 0.5, a, b, mu, sigma)
+            p = fast_trunclognorm_cdf(d + 0.5, a, b, mu, sigma) - \
+                fast_trunclognorm_cdf(d - 0.5, a, b, mu, sigma)
             self.p0[self.d_to_i(d)] = p
 
     def make_normal_probabilities(self):
@@ -130,12 +141,12 @@ class Model:
                 b = self.dmax - row + 0.5
                 for col in range(self.dmin, self.dmax + 1):
                     if col == self.dmax:  # Take all the probability above as well
-                        p = 1 - truncnorm.cdf(stop.mu + self.dmax - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
+                        p = 1 - fast_truncnorm_cdf(stop.mu + self.dmax - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
                     elif col == self.dmin:  # Take all the probability below as well
-                        p = truncnorm.cdf(stop.mu + self.dmin - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma)
+                        p = fast_truncnorm_cdf(stop.mu + self.dmin - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma)
                     else:  # Regular calculation of an interval
-                        p = truncnorm.cdf(stop.mu + col - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma) - \
-                            truncnorm.cdf(stop.mu + col - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
+                        p = fast_truncnorm_cdf(stop.mu + col - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma) - \
+                            fast_truncnorm_cdf(stop.mu + col - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
                     r.append(p)
                 mtx.append(r)
             stop.set_p_matrix(mtx)
@@ -162,14 +173,14 @@ class Model:
                         val = stop.mu + self.dmax - row - 0.5
                         if val <= 0.0:
                             val = ZERO
-                        p = 1 - trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
+                        p = 1 - fast_trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
                     elif col == self.dmin:  # Take all the probability below as well
                         # print("From {} to {}".format(row, col))
                         # print(stop.mu + self.dmin - row + 0.5)
                         val = stop.mu + self.dmin - row + 0.5
                         if val <= 0.0:
                             val = ZERO
-                        p = trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
+                        p = fast_trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
                         # print(p)
                     else:  # Regular calculation of an interval
                         val1 = stop.mu + col - row + 0.5
@@ -178,8 +189,8 @@ class Model:
                         val2 = stop.mu + col - row - 0.5
                         if val2 <= 0.0:
                             val2 = ZERO
-                        p = trunclognorm_cdf(val1, a, b, stop.mu, stop.sigma) - \
-                            trunclognorm_cdf(val2, a, b, stop.mu, stop.sigma)
+                        p = fast_trunclognorm_cdf(val1, a, b, stop.mu, stop.sigma) - \
+                            fast_trunclognorm_cdf(val2, a, b, stop.mu, stop.sigma)
                     # print("From {} to {}: {}".format(row, col, p))
                     r.append(p)
                 mtx.append(r)
@@ -207,12 +218,12 @@ class Model:
                     val = stop.mu + self.dmax - row - 0.5
                     if val <= 0.0:
                         val = ZERO
-                    p = 1 - trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
+                    p = 1 - fast_trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
                 elif col == self.dmin:  # Take all the probability below as well
                     val = stop.mu + self.dmin - row + 0.5
                     if val <= 0.0:
                         val = ZERO
-                    p = trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
+                    p = fast_trunclognorm_cdf(val, a, b, stop.mu, stop.sigma)
                 else:  # Regular calculation of an interval
                     val1 = stop.mu + col - row + 0.5
                     if val1 <= 0.0:
@@ -220,8 +231,8 @@ class Model:
                     val2 = stop.mu + col - row - 0.5
                     if val2 <= 0.0:
                         val2 = ZERO
-                    p = trunclognorm_cdf(val1, a, b, stop.mu, stop.sigma) - \
-                        trunclognorm_cdf(val2, a, b, stop.mu, stop.sigma)
+                    p = fast_trunclognorm_cdf(val1, a, b, stop.mu, stop.sigma) - \
+                        fast_trunclognorm_cdf(val2, a, b, stop.mu, stop.sigma)
                 r.append(p)
             mtx.append(r)
         stop.set_p_matrix(mtx)
@@ -245,15 +256,15 @@ class Model:
             b = self.dmax - row + 0.5
             for col in range(self.dmin, self.dmax + 1):
                 if col == self.dmax:  # Take all the probability above as well
-                    p = 1 - truncnorm.cdf(stop.mu + self.dmax - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
+                    p = 1 - fast_truncnorm_cdf(stop.mu + self.dmax - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
                 elif col == self.dmin:  # Take all the probability below as well
                     # print("From {} to {}".format(row, col))
                     # print(stop.mu + self.dmin - row + 0.5)
-                    p = truncnorm.cdf(stop.mu + self.dmin - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma)
+                    p = fast_truncnorm_cdf(stop.mu + self.dmin - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma)
                     # print(p)
                 else:  # Regular calculation of an interval
-                    p = truncnorm.cdf(stop.mu + col - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma) - \
-                        truncnorm.cdf(stop.mu + col - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
+                    p = fast_truncnorm_cdf(stop.mu + col - row + 0.5, a, b, loc=stop.mu, scale=stop.sigma) - \
+                        fast_truncnorm_cdf(stop.mu + col - row - 0.5, a, b, loc=stop.mu, scale=stop.sigma)
                 # print("From {} to {}: {}".format(row, col, p))
                 r.append(p)
             mtx.append(r)

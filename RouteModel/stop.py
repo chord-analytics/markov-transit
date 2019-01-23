@@ -2,7 +2,7 @@ from scipy.stats import johnsonsb
 import numpy as np
 
 class Stop:
-    def __init__(self, mu, sigma, on, off, thru, g_e, g_l, tau, H, dmin, dmax, Delta, stop_id, stop_name ):
+    def __init__(self, mu:float, sigma:float, on:float, off:float, thru:float, g_e:float, g_l:float, tau:int, H:float, dmin:int, dmax:int, Delta:int, stop_id:int, stop_name:str):
         # Transition matrices
         self.pMtx = None  # Matrix for non-time-point stop
         self.tMtx = None  # Matrix for time point stop
