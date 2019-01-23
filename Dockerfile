@@ -9,7 +9,7 @@ COPY requirements.txt .
 RUN python3.7 -m pip install -r requirements.txt
 
 RUN git clone https://github.com/pybind/pybind11.git
-RUN mkdir /pybind11/build; cd /pybind11/build; cmake ..; make -j2; make install
+RUN mkdir /pybind11/build; cd /pybind11/build; cmake .. -DPYBIND11_TEST=0; make -j2; make install
 
 COPY truncated_norm_cpp truncated_norm_cpp
 RUN python3.7 -m pip install truncated_norm_cpp/
