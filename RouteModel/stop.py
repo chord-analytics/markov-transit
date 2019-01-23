@@ -4,8 +4,8 @@ import numpy as np
 class Stop:
     def __init__(self, mu:float, sigma:float, on:float, off:float, thru:float, g_e:float, g_l:float, tau:int, H:float, dmin:int, dmax:int, Delta:int, stop_id:int, stop_name:str):
         # Transition matrices
-        self.pMtx = np.zeros((2,2))#None  # Matrix for non-time-point stop
-        self.tMtx = np.zeros((2,2))#None  # Matrix for time point stop
+        self.pMtx = None  # Matrix for non-time-point stop
+        self.tMtx = None  # Matrix for time point stop
 
         # Data
         self.mu = float(mu)  # Mean travel time
@@ -18,7 +18,7 @@ class Stop:
         self.tau = int(tau)  # Slack time
         self.gamma_e = float(g_e)  # Early penalty cost
         self.gamma_l = float(g_l)  # Late penalty cost
-        self.cost = 0.0#None  # Total cost placeholder
+        self.cost = None  # Total cost placeholder
 
         # Passenger arrival parameters
         self.jsb_a = -1.0  # Passenger Johnson SB arrival distribution parameter 'a'
