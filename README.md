@@ -1,5 +1,21 @@
-# Markov-Transit
-Markov transit reliability. 
+# Markov Transit Network Reliability Modelling
+The purpose of this project is to extend [thesis work](https://prism.ucalgary.ca/handle/1880/106559) done by W. Klumpenhouwer on Markov Chain bus route reliability to a larger transit network.
+
+The project contains the following main components:
+
+* Markov Chain route reliability modelling
+* Route transfer modelling and reliability caluclations
+* Visualization and mapping of results
+
+These components are outlined in brief below.
+
+## Route Realiability Modelling
+
+## Route Transfer Modelling
+
+## Visualization and Mapping
+The visualization and mapping component takes GTFS route, stop, and shape data and combines it with model outputs to generate a shapefile and a dashboard to visualize reliability chokepoints or "hotspots".
+
 ## Getting started with Docker
 The docker image builds a Ubuntu 18.04 base with Python 3.7 and all the required libraries. It also builds PyBind11 and compiles an optimized version of the truncated lognormal CDF method.
 
