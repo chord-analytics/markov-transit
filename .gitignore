@@ -7,3 +7,5 @@
 *.db3
 *.pyc
 .venv
+.ipynb_checkpoints
+.pytest_cache
