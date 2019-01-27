@@ -7,4 +7,9 @@
 *.db3
 *.pyc
 .venv
+<<<<<<< HEAD
 .ipynb_checkpoints
+=======
+.ipynb_checkpoints
+.pytest_cache
+>>>>>>> 17cd6d263e39172d24281589829ae8a9b5db6e05
