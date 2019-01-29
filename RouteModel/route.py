@@ -31,7 +31,8 @@ def trunclognorm_cdf(x, a, b, mean, sd):
 
 
 class Model:
-    def __init__(self, data, dmin, dmax):
+    def __init__(self, data, dmin, dmax, route_id=None):
+        self.route_id = route_id
         self.dmin = dmin
         self.dmax = dmax
         self.gamma_w = 0.11
@@ -45,7 +46,7 @@ class Model:
         self.p0 = None
         self.set_initial_on_time()
         self.stop_list = []
-        for mu,sigma,nb,na,theta,g_e,g_l,tau,stop_id,stop_name in data:
+        for mu, sigma, nb, na, theta, g_e, g_l, tau, stop_id, stop_name in data:
             self.stop_list.append(
                 Stop(mu, sigma, nb, na, theta, g_e, g_l, tau, self.H, self.dmin, self.dmax, self.Delta, stop_id, stop_name))
 
@@ -77,7 +78,7 @@ class Model:
 
         c.execute(sql, (route_id, config_id))
         res = c.fetchall()
-        return cls(res, dmin, dmax)
+        return cls(res, dmin, dmax, route_id)
 
     @staticmethod
     def from_file(filename):
@@ -397,6 +398,28 @@ class Model:
             for row in reader:
                 self.current_state[int(row[0])] = True
                 self.stop_list[int(row[0])].tau = int(row[1])
+
+    def set_state_from_db(self, db):
+        self.set_ground_state()
+        import sqlite3
+        conn = sqlite3.connect(db)
+        c = conn.cursor()
+
+        sql = """
+        SELECT stop_seq from route_stop 
+        JOIN stop on route_stop.stop_id = stop.stop_id
+        WHERE route_id = ? AND is_tp = 1
+        ORDER BY stop_seq"""
+
+        c.execute(sql, (self.route_id,))
+        res = c.fetchall()
+        for row in res:
+            # Handle end of route difficulties
+            if int(row[0]) == len(self.current_state):
+                self.current_state[-1] = True
+            else:
+                self.current_state[int(row[0])] = True
+
 
     def set_excluded_stops(self, excluded_list):
         # Reset exclusion
