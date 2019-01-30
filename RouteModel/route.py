@@ -292,6 +292,20 @@ class Model:
                 mtx = np.dot(mtx, self.stop_list[j].pMtx)
         return mtx
 
+    def evolve_between_stops(self, start_seq, stop_seq):
+        # Evolve the system between two stops given the current configuration state
+        assert start_seq < stop_seq
+        assert start_seq >= 0
+        assert stop_seq < len(self.current_state)
+
+        mtx = self.p0
+        for j in range(start_seq,stop_seq+1):
+            if self.current_state[j]:
+                mtx = np.dot(mtx, self.stop_list[j].tMtx)
+            else:
+                mtx = np.dot(mtx, self.stop_list[j].pMtx)
+        return mtx
+
     def next_vec(self, vec, i):
         if self.current_state[i]:
             nvec = np.dot(vec, self.stop_list[i].tMtx)
