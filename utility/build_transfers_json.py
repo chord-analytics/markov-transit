@@ -63,4 +63,4 @@ for r in routes:
 data['hubs'].append(hub)
 
 with open("transfers.json", "w") as outfile:
-    json.dump(data, outfile)
+    json.dump(data, outfile, indent=4)

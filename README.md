@@ -47,7 +47,7 @@ This transfer data can be used to build route models and calculate total missed 
 ## Visualization and Mapping
 The visualization and mapping component takes GTFS route, stop, and shape data and combines it with model outputs to generate a shapefile and a dashboard to visualize reliability chokepoints or "hotspots".
 
-## Getting started with Docker
+## Getting started with Dockerf
 The docker image builds a Ubuntu 18.04 base with Python 3.7 and all the required libraries. It also builds PyBind11 and compiles an optimized version of the truncated lognormal CDF method.
 
 In the example below both the `thesis_data.db` and `CT81.idb` are located inside `markov_transit` directory as they need to be mounted. 
