@@ -4,7 +4,7 @@ import sqlite3
 import csv
 
 routes_file = r"test_routes.csv"
-db_file = r"..\thesis_data.db"
+db_file = r"../thesis_data.db"
 outfolder = "shapes"
 db = sqlite3.connect(db_file)
 cur = db.cursor()
