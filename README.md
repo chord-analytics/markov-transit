@@ -24,8 +24,9 @@ The script ```utility/build_transfers_json.py``` (still under construction) will
 * ``hubs`` - a list of hub objects with the following properties
     * ``name`` - display name for the individual hub
     * ``transfer_time`` - time in minutes required to transfer buses at the hub
-    * ``hub_lat`` - [**not implemented**] the latitude of the hub location for display purposes
-    * ``hub_lon`` - [**not implemented**] the longitude of the hub location for display purposes.
+    * ``hub_lat`` - the latitude of the hub location for display purposes
+    * ``hub_lon`` - the longitude of the hub location for display purposes.
+    * ``transfer_rate`` - the fraction of passengers who use the stop that are transferring.
     * ``stops`` - a list of stops with the following properties:
         * ``stop_id`` - the id of the stop
         * ``stop_name`` - the name of the stop
@@ -40,14 +41,23 @@ The script ```utility/build_transfers_json.py``` (still under construction) will
         * ``theta`` - the average through passengers for a bus on the route at the hub stop
         * ``route_number``  - the route's display number
         * ``route_name`` - the name of the route (and the scheduled attached)
-        * ``daily_count`` - [**not implemented**] the daily number of buses that run on the route
+        * ``daily_count`` - the daily number of buses that run on the route
+    * ``transfers`` - transfer counts between routes
+        * ``from_id`` - the route from which transfers are happening
+        * ``to_id`` - the route to which transfers are occuring
+        * ``daily_transfer`` the number of people who transfer on each route.
 
 This transfer data can be used to build route models and calculate total missed transfers at a given hub.
+
+#### Determining Transfer Flows
+In order to determine the number of passengers transferring to each stop, we will need to make some assumptions from the data:
+* The number of passengers who "transfer" at a given hub is a fixed fraction of the total number of alighting passengers.
+* The distribution of the of passengers who "transfer" at a given stop is given by the boarding pattern at that stop. For example, if a certain route has 10% of all boardings, it will get 10% of transfers.
 
 ## Visualization and Mapping
 The visualization and mapping component takes GTFS route, stop, and shape data and combines it with model outputs to generate a shapefile and a dashboard to visualize reliability chokepoints or "hotspots".
 
-## Getting started with Dockerf
+## Getting started with Docker
 The docker image builds a Ubuntu 18.04 base with Python 3.7 and all the required libraries. It also builds PyBind11 and compiles an optimized version of the truncated lognormal CDF method.
 
 In the example below both the `thesis_data.db` and `CT81.idb` are located inside `markov_transit` directory as they need to be mounted. 

@@ -184,7 +184,7 @@ thesis_conn.commit()
 thesis_c.execute("INSERT INTO model_config (route_id, config_id, comments) VALUES (?, 1, 'Standard configuration, slack time of 0min')", (route_id,))
 thesis_conn.commit()
 
-with open("route_{}_summary.csv".format(route_id), 'w') as outfile:
-    outfile.write("Link,Start ID, Start Name, Start lat, Start lon, End ID, End Name, End lat, End Lon, Counts, Mean, SD, COV\n")
-    outfile.write("\n".join([",".join([str(i) for i in x]) for x in summary_stats]))
+# with open("route_{}_summary.csv".format(route_id), 'w') as outfile:
+#     outfile.write("Link,Start ID, Start Name, Start lat, Start lon, End ID, End Name, End lat, End Lon, Counts, Mean, SD, COV\n")
+#     outfile.write("\n".join([",".join([str(i) for i in x]) for x in summary_stats]))
 
