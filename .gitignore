@@ -10,3 +10,4 @@
 .ipynb_checkpoints
 .pytest_cache
 *.geojson
+.DS_Store
