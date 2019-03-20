@@ -24,8 +24,8 @@ The script ```utility/build_transfers_json.py``` (still under construction) will
 * ``hubs`` - a list of hub objects with the following properties
     * ``name`` - display name for the individual hub
     * ``transfer_time`` - time in minutes required to transfer buses at the hub
-    * ``hub_lat`` - [**not implemented**] the latitude of the hub location for display purposes
-    * ``hub_lon`` - [**not implemented**] the longitude of the hub location for display purposes.
+    * ``hub_lat`` - the latitude of the hub location for display purposes
+    * ``hub_lon`` - the longitude of the hub location for display purposes.
     * ``stops`` - a list of stops with the following properties:
         * ``stop_id`` - the id of the stop
         * ``stop_name`` - the name of the stop

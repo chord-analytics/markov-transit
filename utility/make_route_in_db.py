@@ -151,6 +151,7 @@ for idx in delta_dict:
         sd = 0
         cov = 0
     if len(deltas) < 1:
+        print("Not Enough Data")
         raise Exception
 
     print("Inserting model data for {},{}".format(idx[0], idx[1]))
