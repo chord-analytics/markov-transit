@@ -44,7 +44,6 @@ parser.add_argument("--config_id", type=int, help="Configuration ID.")
 def main():
     args = parser.parse_args()
     transfer_data = json.load(open(args.transfer_json))
-    counter = 0
     for hub in transfer_data['hubs']:
         route_distributions = {}
         for route in hub['routes']:
@@ -55,7 +54,6 @@ def main():
                 route_distributions[route['route_id']] = model.evolve_to_stop(route['stop_seq'])
             except Exception as e:
                 logging.debug(e)
-            counter += 1
         n = len(route_distributions)
         transfer_time = hub['transfer_time']
         route_to_route_transfer_matrix = np.ones((n,n))
@@ -70,7 +68,6 @@ def main():
 
     with open(args.output_json, 'w') as out_json:
         json.dump(transfer_data, out_json)
-    print(counter)
     return
 
 if __name__ == "__main__":
