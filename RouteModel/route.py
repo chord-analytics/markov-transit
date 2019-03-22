@@ -1,6 +1,7 @@
 import csv
 import math
 import functools
+from numba import jit
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
@@ -131,6 +132,7 @@ class Model:
                 fast_trunclognorm_cdf(d - 0.5, a, b, mu, sigma)
             self.p0[self.d_to_i(d)] = p
 
+    @jit()
     def make_normal_probabilities(self):
         for stop in self.stop_list:
             mtx = []
@@ -160,6 +162,7 @@ class Model:
                 row[self.d_to_i(0)] += s
             stop.set_t_matrix(tMtx)
 
+    @jit()
     def make_lognormal_probabilities(self):
         for stop in self.stop_list:
             mtx = []
@@ -279,6 +282,7 @@ class Model:
             row[self.d_to_i(0)] += s
         stop.set_t_matrix(tMtx)
 
+    @jit()
     def evolve_to_stop(self, s_seq):
         # Evolve the system to a stop given the current configuration state
         if s_seq > len(self.current_state):
