@@ -67,7 +67,7 @@ def main():
         hub['transfer_probability_matrix_index'] = {key:i for i,key in enumerate(route_distributions.keys())}
 
     with open(args.output_json, 'w') as out_json:
-        json.dump(transfer_data, out_json)
+        json.dump(transfer_data, out_json, indent=4)
     return
 
 if __name__ == "__main__":
