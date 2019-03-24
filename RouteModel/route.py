@@ -78,7 +78,9 @@ class Model:
 
         c.execute(sql, (route_id, config_id))
         res = c.fetchall()
-        return cls(res, dmin, dmax, route_id)
+        m = cls(res, dmin, dmax, route_id)
+        m.set_state_from_db(db)
+        return m
 
     @staticmethod
     def from_file(filename):
