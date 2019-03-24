@@ -165,8 +165,8 @@ for idx in delta_dict:
     c.execute(sql, (route_id, idx[0]))
     psgr = c.fetchone()
     out_data = [route_id, 1, seq, idx[0], mean, sd, psgr[3], psgr[4], psgr[5], 0.0, 0.0, 0]
-    sql = """INSERT INTO model_data (route_id, config_id, stop_seq, stop_id, mu, sigma, nb, na, theta, gamma_e, gamma_l, tau)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"""
+    sql = """INSERT INTO model_data (route_id, config_id, stop_seq, stop_id, mu, sigma, nb, na, theta, gamma_e, gamma_l, tau,is_tp)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,0)"""
     thesis_c.execute(sql, out_data)
 
     print("Inserting travel time data for {},{}".format(idx[0], idx[1]))
