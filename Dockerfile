@@ -20,3 +20,5 @@ RUN echo "backend : Agg" > /root/.config/matplotlib/matplotlibrc
 # alias python3.7 as python
 RUN echo 'alias python=python3.7' >> ~/.bashrc
 
+WORKDIR /usr/src/
+
